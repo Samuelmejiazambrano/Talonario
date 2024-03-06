@@ -1,5 +1,5 @@
 <template>
-  <div class="padre">
+  <div class="padre" :style="{ backgroundColor: color }">
     <div class="header">
       <h1>TALONARIO</h1>
     </div>
@@ -7,10 +7,18 @@
       <div class="info1">
         <h2>Informacion</h2>
         <div>
-          <p>🎁:{{ premio }}</p>
-          <p>💰:{{ valor }}</p>
-          <p>🏰:{{ loteria }}</p>
-          <p>📅:{{ fecha }}</p>
+          <p><b>🎁:{{ premio }}</b></p>
+          <p><b>💰:{{ valor }}</b></p>
+          <p><b>🏰:{{ loteria }}</b></p>
+          <p><b>📅:{{ fecha }}</b></p>
+           <button
+          type="button" class="editar" data-bs-toggle="modal" data-bs-target="#exampleModal4"
+          v-if="mostrarCrearTalonario2" 
+        >
+          editar
+        </button>
+
+          <!-- <button  v-if="editar2" @click="editar()">editar✏️</button> -->
         </div>
       </div>
 
@@ -30,7 +38,7 @@
              >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                  <div class="modal-header">
+                  <div class="personalizar">
                     <h5 class="modal-title" id="exampleModalToggleLabel">
                       Boleta {{ selectedBoleta }} estado disponible
                     </h5>
@@ -94,7 +102,7 @@
                    <button v-if="mostrarCrearusuario"  @click="reservarBoleta(index)">guardar</button>
                    <div  v-else-if=" mostrarinputs" class="mostrarinputs">
                     
-<button @click="comprarBoleta(index)">comprar</button>
+<button @click="comprarBoleta()">comprar</button>
 <!-- Button trigger modal -->
 <button type="button" class="butoninputs" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="mostrarDatosComprador(index)">
   comprador
@@ -122,7 +130,7 @@
     </div>
   </div>
   
-                     <button class="butoninputs" @click="liberarBoleta(index)">liberar</button>
+                     <button class="butoninputs" @click="liberarBoleta()">liberar</button>
 
                    </div>
                   
@@ -160,16 +168,17 @@
         </button>
 
         <!-- Modal -->
-        <div
-          class="modal fade"
-          id="exampleModal4"
-          tabindex="-1"
-          aria-labelledby="exampleModalLabel4"
-          aria-hidden="true"
-        >
+    <div
+  v-if="formularioCrear"
+  class="modal fade"
+  id="exampleModal4"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel4"
+  aria-hidden="true"
+>
           <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header">
+              <div class="personalizar">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">
                   Crea tu Talonario
                 </h1>
@@ -183,7 +192,7 @@
               <div class="modal-body">
                 <input type="text" placeholder="premio" v-model="premio" />
                 <input type="number" placeholder="valor boleta" v-model="valor" />
-                <select name="" id="" v-model="loteria">
+                <select  v-model="loteria">
                   <option value="La culona">La culona</option>
                   <option value="La santander">La santander</option>
                   <option value="La pulga">La pulga</option>
@@ -239,7 +248,7 @@
         >
           <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header">
+              <div class="personalizar">
                 <h5 class="modal-title" id="otroBoletasLabel">Lista de Compradores</h5>
               </div>
               <div class="listar" >
@@ -333,12 +342,13 @@
         >
           <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header">
+              <div class="personalizar">
                 <h5 class="modal-title" id="personalizarModalLabel">
                   personalizar
                 </h5>
               </div>
               <div class="modal-body" id="personalizar">
+                <input type="color" v-model="color">
                 <button @click="cambiaRojo()">cambiar a rojo</button>
                 <button @click="cambiazul()">cambiar a azul</button>
                 <button @click="cambiaNaranja()">cambiar a naranja</button>
@@ -369,37 +379,38 @@ const loteria = ref("");
 const cantidad = ref("");
 const fecha = ref("");
 const formularioDisponible = ref(true);
+let formularioCrear = ref(true);
 let mostrarCrearTalonario = ref(true);
+let mostrarCrearTalonario2 = ref(false);
 let mostrarCrearusuario = ref(true)
 let mostrarinputs = ref(false);
+let editar2 = ref(false);
 const selectedBoleta = ref({});
+let color=ref("white")
 
+const editar = () => {
+    
+  formularioCrear.value = true;
+ mostrarCrearTalonario2.value=true
 
-
+};
 const compradorSeleccionado = ref(null);
-// const liberarBoleta = () => {
-//    mostrarCrearusuario.value = true;
-//   operaciones.value = "";
+
 // };
-const liberarBoleta = (index) => {
-  if (index >= 0 && index < datos2.value.length) {
-    const boleta = datos2.value[index]; // Accede al objeto de datos en la posición del índice
-    if (boleta && boleta.operaciones) {
-      boleta.operaciones = "disponible"; // Actualiza la operación en el objeto de datos
-    }
+const liberarBoleta = () => {
+  const selectedBoletaIndex = datos2.value.findIndex(boleta => boleta.selectedBoleta === selectedBoleta.value);
+  if (selectedBoletaIndex >= 0) {
+    datos2.value[selectedBoletaIndex].operaciones = "disponible";
   } else {
-    console.error('Índice de boleta inválido');
+    console.error("Boleta no encontrada");
   }
 };
-
 const comprarBoleta = (index) => {
-  if (index >= 0 && index < datos2.value.length) {
-    const boleta = datos2.value[index]; // Accede al objeto de datos en la posición del índice
-    if (boleta && boleta.operaciones) {
-      boleta.operaciones = "pagar"; // Actualiza la operación en el objeto de datos
-    }
+ const selectedBoletaIndex = datos2.value.findIndex(boleta => boleta.selectedBoleta === selectedBoleta.value);
+  if (selectedBoletaIndex >= 0) {
+    datos2.value[selectedBoletaIndex].operaciones = "pagar";
   } else {
-    console.error('Índice de boleta inválido');
+    console.error("Boleta no encontrada");
   }
 };
 
@@ -417,6 +428,7 @@ const mostrarDatosComprador = (index) => {
   } else {
     console.error('Índice de comprador inválido');
   }
+  
 };
 
 
@@ -429,17 +441,16 @@ const mostrarModal = () => {
 // Método para cerrar el modal
 const cerrarModal = () => {
   mostrarinputs.value = true;
+
 };
 const selectButton = (index) => {
   selectedBoleta.value = numerosSeleccionados.value[index];
   if (datos2.value.some(item => item.selectedBoleta === selectedBoleta.value && (item.operaciones === "pagar" || item.operaciones === "reservar"))) {
-    mostrarCrearusuario.value = false;
-       
-    
-  } else {
-    mostrarCrearusuario.value = true;
-  }
-  
+  mostrarCrearusuario.value = false;
+} else {
+  mostrarCrearusuario.value = true;
+  liberarBoleta(index);
+}
 };
 
 const getColor = (index) => {
@@ -471,14 +482,11 @@ const guardar = () => {
   if (!premio.value || !valor.value || !loteria.value || !cantidad.value || !fecha.value) {
    Swal.fire("Por favor completa todos los campos"); 
    
-  }else
-
-if (isNaN(parseInt(cantidad.value)) || parseInt(cantidad.value) <= 0) {
+  }else if (isNaN(parseInt(cantidad.value)) || parseInt(cantidad.value) <= 0) {
       Swal.fire("La cantidad debe ser un número positivo");  
   
-  }
-
-  const dato = {
+  }else{
+    const dato = {
     premio: premio.value,
     valor: valor.value,
     loteria: loteria.value,
@@ -496,6 +504,15 @@ if (isNaN(parseInt(cantidad.value)) || parseInt(cantidad.value) <= 0) {
   console.log(numerosSeleccionados);
   mostrarCrearTalonario.value = false;
   mostrarinputs.value=true
+   editar2.value=true
+   mostrarCrearTalonario2.value=true
+ 
+  
+console.log(formularioCrear.value);
+  }
+  
+
+ 
 };
 
 const totalDineroRecolectado = ref(0); 
@@ -562,6 +579,11 @@ const reservarBoleta = (index) => {
     operaciones: operaciones.value,
     selectedBoleta: selectedBoleta.value,
   };
+
+nombre.value="";
+direccion.value="";
+numeroCel.value="";
+operaciones.value="";
 
   console.log("Boleta reservada:", reserva);
 
@@ -717,8 +739,10 @@ function cambiaBlanco() {
 
 .modal-footer .disponible {
   width: 100%;
-  height: 5vh;
+  height: 7vh;
+  
 }
+
 
 .card {
   width: auto; /* Ancho de la tarjeta */
@@ -782,5 +806,15 @@ function cambiaBlanco() {
 .mostrarinputs button{
   width: 120%;
 }
-
+.editar{
+  width: 100px;
+  padding: 2px;
+  border-radius: 5px;
+}
+.personalizar{
+  background-color: #ffc018;
+  text-align: center;
+  padding: 10px;
+  
+}
 </style>
