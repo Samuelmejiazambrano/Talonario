@@ -244,24 +244,30 @@
                 </h1>
               </div>
               <div class="modal-body" v-if="mostrarCrearusuario">
+                
+                <label >Ingresa el premio:</label>
                 <input type="text" placeholder="premio" v-model="premio" />
+                   <label >Ingresa el valor de la Boleta:</label>
                 <input
                   type="number"
                   placeholder="valor boleta"
                   v-model="valor"
                 />
+                   <label >Ingresa el nombre de la Loteria:</label>
                 <select v-model="loteria">
-                   <option value="">Seleccione una lotería</option>
+                  
                   <option value="La culona">La culona</option>
                   <option value="La santander">La santander</option>
                   <option value="La pulga">La pulga</option>
                 </select>
+                <label >Ingresa la cantidad de Boletas:</label>
                 <select name="" id="" v-model="cantidad">
-                   <option value="">Seleccione la cantidad</option>
+                   
                   <option value="50">50</option>
                   <option value="75">75</option>
                   <option value="100">100</option>
                 </select>
+                <label >Ingresa la Fecha:</label>
                 <input type="date" placeholder="Fecha de sorteo" v-model="fecha" />
               </div>
               <div class="modal-footer" v-if="mostrarCrearusuario">
@@ -638,10 +644,11 @@ function descargarPDF() {
 
   const tableData = usuariosPagados.map((item, index) => [
     item.selectedBoleta,
-    item.numeroCel,
     item.nombre,
+    item.numeroCel,
+     item.direccion,
     item.operaciones,
-    item.direccion,
+   
   ]);
 
   const totalPages = doc.internal.getNumberOfPages();
@@ -658,12 +665,12 @@ function descargarPDF() {
 
   // Genera la tabla
   doc.autoTable({
-    head: [["Boleta", "Nombre", "Teléfono", "Dirección", "identiicacion"]],
+    head: [["Boleta", "Nombre", "Teléfono", "Dirección", "Operacion"]],
     body: tableData,
     startY: startY,
   });
 
-  // Calcula y muestra el total
+  
   doc.text(`Total dinero recolectado: ${totalDineroRecolectado}`, 10, 80);
 
   // Guarda el PDF
@@ -807,6 +814,11 @@ const reservarBoleta = (index) => {
   flex-direction: column;
   gap: 10px;
   padding: 10px;
+
+}
+.modal-body input , select,label{
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .btn {
@@ -931,5 +943,9 @@ const reservarBoleta = (index) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  
+}
+.personalizar input{
+  border-radius: 20px;
 }
 </style>
