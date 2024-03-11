@@ -30,7 +30,7 @@
             editar
           </button>
 
-          <!-- <button  v-if="editar2" @click="editar()">editar✏️</button> -->
+          
         </div>
       </div>
 
@@ -653,17 +653,17 @@ function descargarPDF() {
 
   const totalPages = doc.internal.getNumberOfPages();
 
-  // Calcula la altura total de la tabla
-  const tableHeight = (tableData.length + 1) * 10; // Número de filas * altura de fila (10)
+  
+  const tableHeight = (tableData.length + 1) * 10; 
 
   if (startY + tableHeight > doc.internal.pageSize.height) {
-    // Si la tabla excede el espacio disponible, añade una nueva página
+ 
     doc.addPage();
-    startY = 20; // Restablece la posición inicial en la nueva página
-    availableSpace = doc.internal.pageSize.height - startY - 10; // Recalcula el espacio disponible
+    startY = 20; 
+    availableSpace = doc.internal.pageSize.height - startY - 10;
   }
 
-  // Genera la tabla
+ 
   doc.autoTable({
     head: [["Boleta", "Nombre", "Teléfono", "Dirección", "Operacion"]],
     body: tableData,
@@ -673,7 +673,7 @@ function descargarPDF() {
   
   doc.text(`Total dinero recolectado: ${totalDineroRecolectado}`, 10, 80);
 
-  // Guarda el PDF
+  
   doc.save("vendidas.pdf");
 }
 
@@ -859,26 +859,26 @@ const reservarBoleta = (index) => {
 }
 
 .card {
-  width: auto; /* Ancho de la tarjeta */
-  height: auto; /* Altura de la tarjeta */
+  width: auto; 
+  height: auto; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #ccc; /* Color de fondo */
+  background-color: #ccc; 
   text-align: center;
-  line-height: 1.5; /* Altura de línea */
+  line-height: 1.5; 
   margin: 8px;
-  background-color: #ff9934; /* Color de fondo personalizado */
-  border: 2px solid #000; /* Borde de la tarjeta */
-  border-radius: 10px; /* Radio de borde */
-  color: #fff; /* Color del texto */
-  font-weight: bold; /* Grosor de la fuente */
+  background-color: #ff9934; 
+  border: 2px solid #000; 
+  border-radius: 10px; 
+  color: #fff; 
+  font-weight: bold; 
   padding: 20px;
 }
 
 .card p {
-  margin: 8px 0; /* Margen interno de los párrafos dentro de la tarjeta */
+  margin: 8px 0;
 }
 
 .listar {
@@ -928,7 +928,7 @@ const reservarBoleta = (index) => {
   gap: 40px;
 }
 .mostrarinputs button {
-  width: 15vh;
+  width: 12vh;
   height: 8vh;
 }
 .editar {
