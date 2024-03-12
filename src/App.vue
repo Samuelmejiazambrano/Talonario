@@ -29,8 +29,6 @@
           >
             editar
           </button>
-
-          
         </div>
       </div>
 
@@ -183,7 +181,6 @@
                         <b>Cliente</b>
                       </button>
 
-                    
                       <button class="butoninputs" @click="liberarBoleta()">
                         <b>liberar</b>
                       </button>
@@ -244,31 +241,32 @@
                 </h1>
               </div>
               <div class="modal-body" v-if="mostrarCrearusuario">
-                
-                <label >Ingresa el premio:</label>
+                <label>Ingresa el premio:</label>
                 <input type="text" placeholder="premio" v-model="premio" />
-                   <label >Ingresa el valor de la Boleta:</label>
+                <label>Ingresa el valor de la Boleta:</label>
                 <input
                   type="number"
                   placeholder="valor boleta"
                   v-model="valor"
                 />
-                   <label >Ingresa el nombre de la Loteria:</label>
+                <label>Ingresa el nombre de la Loteria:</label>
                 <select v-model="loteria">
-                  
                   <option value="La culona">La culona</option>
                   <option value="La santander">La santander</option>
                   <option value="La pulga">La pulga</option>
                 </select>
-                <label >Ingresa la cantidad de Boletas:</label>
+                <label>Ingresa la cantidad de Boletas:</label>
                 <select name="" id="" v-model="cantidad">
-                   
                   <option value="50">50</option>
                   <option value="75">75</option>
                   <option value="100">100</option>
                 </select>
-                <label >Ingresa la Fecha:</label>
-                <input type="date" placeholder="Fecha de sorteo" v-model="fecha" />
+                <label>Ingresa la Fecha:</label>
+                <input
+                  type="date"
+                  placeholder="Fecha de sorteo"
+                  v-model="fecha"
+                />
               </div>
               <div class="modal-footer" v-if="mostrarCrearusuario">
                 <button
@@ -430,7 +428,6 @@
                   <label>Personaliza Cards: </label>
                   <input type="color" v-model="colorcard" />
                 </div>
-               
               </div>
             </div>
           </div>
@@ -479,7 +476,6 @@ const editar = () => {
 };
 const compradorSeleccionado = ref(null);
 
-// };
 const liberarBoleta = () => {
   const selectedBoletaIndex = datos2.value.findIndex(
     (boleta) => boleta.selectedBoleta === selectedBoleta.value
@@ -502,7 +498,6 @@ const comprarBoleta = (index) => {
     console.error("Boleta no encontrada");
   }
 };
-
 
 const mostrarDatosComprador = () => {
   if (!selectedBoleta.value) {
@@ -570,7 +565,7 @@ const getColor = (index) => {
       ? "red"
       : "#ff9934";
   } else {
-    return "#ff9934"; // Color por defecto
+    return "#ff9934";
   }
 };
 
@@ -638,42 +633,35 @@ function descargarPDF() {
   doc.setFontSize(12);
   doc.text("Resumen de boletas vendidas", 10, 10);
 
-  // Calcula el espacio restante en la página
-  let startY = 20; // Inicia en la posición y donde comienza la tabla
-  let availableSpace = doc.internal.pageSize.height - startY - 10; // 10 de margen inferior
+  let startY = 20;
+  let availableSpace = doc.internal.pageSize.height - startY - 10;
 
   const tableData = usuariosPagados.map((item, index) => [
     item.selectedBoleta,
     item.nombre,
     item.numeroCel,
-     item.direccion,
+    item.direccion,
     item.operaciones,
-   
   ]);
 
   const totalPages = doc.internal.getNumberOfPages();
 
-  
-  const tableHeight = (tableData.length + 1) * 10; 
+  const tableHeight = (tableData.length + 1) * 10;
 
   if (startY + tableHeight > doc.internal.pageSize.height) {
- 
     doc.addPage();
-    startY = 20; 
+    startY = 20;
     availableSpace = doc.internal.pageSize.height - startY - 10;
   }
 
- 
   doc.autoTable({
     head: [["Boleta", "Nombre", "Teléfono", "Dirección", "Operacion"]],
     body: tableData,
     startY: startY,
   });
 
-  
   doc.text(`Total dinero recolectado: ${totalDineroRecolectado}`, 10, 80);
 
-  
   doc.save("vendidas.pdf");
 }
 
@@ -685,41 +673,41 @@ const reservarBoleta = (index) => {
     !operaciones.value
   ) {
     Swal.fire("Por favor completa todos los campos");
+  } else {
+    const reserva = {
+      valor2: valor.value,
+      nombre: nombre.value,
+      direccion: direccion.value,
+      numeroCel: numeroCel.value,
+      operaciones: operaciones.value,
+      selectedBoleta: selectedBoleta.value,
+    };
+
+    nombre.value = "";
+    direccion.value = "";
+    numeroCel.value = "";
+    operaciones.value = "";
+
+    console.log("Boleta reservada:", reserva);
+
+    if (
+      datos2.value.some(
+        (item) =>
+          item.selectedBoleta === selectedBoleta.value &&
+          (item.operaciones === "pagar" || item.operaciones === "reservar")
+      )
+    ) {
+      alert("Esta boleta ya ha sido reservada o pagada");
+    }
+    datos2.value.push(reserva);
+
+    console.log("Datos actualizados:", datos2.value);
+    selectButton();
+    // mostrarCrearusuario.value = false;
+    ocultarbuton.value = false;
+    mostrarbuton.value = true;
+    mostrarCrearusuario.value = false;
   }
-
-  const reserva = {
-    valor2: valor.value,
-    nombre: nombre.value,
-    direccion: direccion.value,
-    numeroCel: numeroCel.value,
-    operaciones: operaciones.value,
-    selectedBoleta: selectedBoleta.value,
-  };
-
-  nombre.value = "";
-  direccion.value = "";
-  numeroCel.value = "";
-  operaciones.value = "";
-
-  console.log("Boleta reservada:", reserva);
-
-  if (
-    datos2.value.some(
-      (item) =>
-        item.selectedBoleta === selectedBoleta.value &&
-        (item.operaciones === "pagar" || item.operaciones === "reservar")
-    )
-  ) {
-    alert("Esta boleta ya ha sido reservada o pagada");
-  }
-  datos2.value.push(reserva);
-
-  console.log("Datos actualizados:", datos2.value);
-  selectButton();
-  // mostrarCrearusuario.value = false;
-  ocultarbuton.value = false;
-  mostrarbuton.value = true;
-  mostrarCrearusuario.value = false;
 };
 </script>
 <style scoped>
@@ -814,9 +802,10 @@ const reservarBoleta = (index) => {
   flex-direction: column;
   gap: 10px;
   padding: 10px;
-
 }
-.modal-body input , select,label{
+.modal-body input,
+select,
+label {
   border-radius: 10px;
   padding: 5px;
 }
@@ -859,21 +848,21 @@ const reservarBoleta = (index) => {
 }
 
 .card {
-  width: auto; 
-  height: auto; 
+  width: auto;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #ccc; 
+  background-color: #ccc;
   text-align: center;
-  line-height: 1.5; 
+  line-height: 1.5;
   margin: 8px;
-  background-color: #ff9934; 
-  border: 2px solid #000; 
-  border-radius: 10px; 
-  color: #fff; 
-  font-weight: bold; 
+  background-color: #ff9934;
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
   padding: 20px;
 }
 
@@ -943,9 +932,8 @@ const reservarBoleta = (index) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  
 }
-.personalizar input{
+.personalizar input {
   border-radius: 20px;
 }
 </style>
