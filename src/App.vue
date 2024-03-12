@@ -742,7 +742,7 @@ const reservarBoleta = (index) => {
   align-items: center;
   background-color: #ffc018;
   color: white;
-  padding: 10px;
+  /* padding: 5px; */
   position: fixed;
   width: 100%;
   bottom: 0;
