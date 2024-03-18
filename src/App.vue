@@ -5,19 +5,22 @@
     </div>
     <div class="info">
       <div class="info1" :style="{ backgroundColor: colorcard }">
-        <h2>Informacion</h2>
+        <h2>
+          Informacion
+         
+        </h2>
         <div>
           <p>
-            <b>🎁:{{ premio }}</b>
+            <b>🎁{{ premio }}</b>
           </p>
           <p>
-            <b>💰:{{ valor }}</b>
+            <b>💰{{ valor }}</b>
           </p>
           <p>
-            <b>🏰:{{ loteria }}</b>
+            <b>🏰{{ loteria }}</b>
           </p>
           <p>
-            <b>📅:{{ fecha }}</b>
+            <b>📅{{ fecha }}</b>
           </p>
           <button
             type="button"
@@ -27,7 +30,7 @@
             v-if="mostrarCrearTalonario2"
             @click="editar()"
           >
-            editar
+            Editar
           </button>
         </div>
       </div>
@@ -52,6 +55,12 @@
                     <h5 class="modal-title" id="exampleModalToggleLabel">
                       Boleta {{ selectedBoleta }}
                     </h5>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-corner"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
                   <div class="modal-footer">
                     <button
@@ -60,18 +69,41 @@
                       data-bs-toggle="modal"
                       data-bs-dismiss="modal"
                       v-if="ocultarbuton"
+                      
                     >
-                      Adquirir boleta
+                     <b>Adquirir boleta</b> 
                     </button>
-                    <button
+                    <!-- <button
                       class="disponible"
                       data-bs-target="#exampleModalToggle2"
                       data-bs-toggle="modal"
                       data-bs-dismiss="modal"
-                      v-else-if="!ocultarbuton"
-                    >
-                      <b> Observa tu boleta</b>
-                    </button>
+                      v-else-if="!ocultarbuton">
+                      <b>Observar </b>
+                    </button> -->
+                    <div v-else-if="mostrarinputs" class="mostrarinputs">
+                      <button @click="comprarBoleta()" v-if="comprarboleta" >
+                        <b>Comprar boleta</b>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="butoninputs"
+                        data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop"
+                        @click="
+                          mostrarcomprador();
+                          mostrarDatosComprador()  "
+                     v-if="listarboletaycliente"
+                     
+                      >
+                        <b>Cliente</b>
+                      </button>
+
+                      <button class="butoninputs" @click="liberarBoleta()" v-if="listarboletaycliente"  >
+                        <b>Liberar</b>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -83,6 +115,8 @@
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel2"
               tabindex="-1"
+              
+             
             >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content" id="comprar">
@@ -95,18 +129,26 @@
                       id="exampleModalToggleLabel2"
                       v-if="mostrarCrearusuario"
                     >
-                      Compra tu Boleta
+                      Comprar boleta #{{ selectedBoleta }}
                     </h5>
+
                     <h5
                       class="modal-title"
                       id="exampleModalToggleLabel2"
                       v-else-if="mostrarinputs"
+                   
                     >
-                      <b>Opciones</b>
+                      <b>Boleta  comprada </b>
                     </h5>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-corner"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                     v-if="mostrarCrearusuario"></button>
                   </div>
                   <div class="modal-body" v-if="mostrarCrearusuario">
-                    <form>
+                    <form >
                       <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input
@@ -118,7 +160,7 @@
                       </div>
                       <div class="mb-3">
                         <label for="direccion" class="form-label"
-                          >Dirección</label
+                          >Direccion</label
                         >
                         <input
                           type="text"
@@ -129,7 +171,7 @@
                       </div>
                       <div class="mb-3">
                         <label for="numeroCel" class="form-label"
-                          >Número de celular</label
+                          >Numero de celular</label
                         >
                         <input
                           type="text"
@@ -147,10 +189,9 @@
                           id="operaciones"
                           v-model="operaciones"
                         >
-                          <option value="">Seleccione una operación</option>
+                          <option value="">Seleccione una operacion</option>
                           <option value="pagar">pagar</option>
                           <option value="reservar">reservar</option>
-                          <option value="disponible">disponible</option>
                         </select>
                       </div>
                     </form>
@@ -158,33 +199,18 @@
 
                   <div class="modal-footer">
                     <button
-                      v-if="mostrarCrearusuario"
-                      @click="reservarBoleta(index)"
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
                     >
-                      guardar
+                  cerrar
                     </button>
-                    <div v-else-if="mostrarinputs" class="mostrarinputs">
-                      <button @click="comprarBoleta()">
-                        <b>comprar Boleta</b>
-                      </button>
-
-                      <button
-                        type="button"
-                        class="butoninputs"
-                        data-bs-toggle="modal"
-                        data-bs-target="#staticBackdrop"
-                        @click="
-                          mostrarcomprador();
-                          mostrarDatosComprador();
-                        "
-                      >
-                        <b>Cliente</b>
-                      </button>
-
-                      <button class="butoninputs" @click="liberarBoleta()">
-                        <b>liberar</b>
-                      </button>
-                    </div>
+                    <button
+                      
+                      @click="reservarBoleta(index),actualizarEstadoOcultarComprador()"
+                     v-if="mostrarCrearusuario">
+                      Guardar
+                    </button>
                   </div>
                 </div>
               </div>
@@ -213,7 +239,7 @@
           data-bs-target="#exampleModal4"
           v-if="mostrarCrearTalonario"
         >
-          Crea tu Talonario
+          Crear Talonario
         </button>
 
         <!-- Modal -->
@@ -228,8 +254,14 @@
             <div class="modal-content">
               <div class="personalizar" v-if="mostrarCrearusuario">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">
-                  Crea tu Talonario
+                  Crear Talonario
                 </h1>
+                <button
+                  type="button"
+                  class="btn-close btn-close-corner"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
               <div
                 class="personalizar"
@@ -241,27 +273,27 @@
                 </h1>
               </div>
               <div class="modal-body" v-if="mostrarCrearusuario">
-                <label>Ingresa el premio:</label>
+                <label>Ingresar premio</label>
                 <input type="text" placeholder="premio" v-model="premio" />
-                <label>Ingresa el valor de la Boleta:</label>
+                <label>Valor de la Boleta</label>
                 <input
                   type="number"
                   placeholder="valor boleta"
                   v-model="valor"
                 />
-                <label>Ingresa el nombre de la Loteria:</label>
+                <label>Nombre de la Loteria</label>
                 <select v-model="loteria">
                   <option value="La culona">La culona</option>
                   <option value="La santander">La santander</option>
                   <option value="La pulga">La pulga</option>
                 </select>
-                <label>Ingresa la cantidad de Boletas:</label>
+                <label>Cantidad de Boletas</label>
                 <select name="" id="" v-model="cantidad">
                   <option value="50">50</option>
                   <option value="75">75</option>
                   <option value="100">100</option>
                 </select>
-                <label>Ingresa la Fecha:</label>
+                <label>Ingrese la Fecha</label>
                 <input
                   type="date"
                   placeholder="Fecha de sorteo"
@@ -274,14 +306,14 @@
                   class="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
-                  cerrar
+                  Cerrar
                 </button>
                 <button
                   type="button"
                   class="btn btn-primary"
                   @click="guardar()"
                 >
-                  guardar
+                  Guardar
                 </button>
               </div>
             </div>
@@ -290,15 +322,16 @@
       </div>
       <div class="chucho" :style="{ backgroundColor: colorcard }">
         <h2>Acciones</h2>
-        <button>Estado</button>
 
         <button
           type="button"
           class="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#listarBoletasModal"
+          @click="listarBoleta()"
+          :style="{ backgroundColor: colorfooter }"
         >
-          📝Listar tus boletas
+          📝Listar boletas
         </button>
 
         <!-- Modal para Listar tus boletas -->
@@ -308,6 +341,7 @@
           tabindex="-1"
           aria-labelledby="listarBoletasLabel"
           aria-hidden="true"
+         
         >
           <div class="modal-dialog">
             <div class="modal-content">
@@ -315,31 +349,38 @@
                 <h5 class="modal-title" id="otroBoletasLabel">
                   Lista de Compradores
                 </h5>
+
+                <button
+                  type="button"
+                  class="btn-close btn-close-corner"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
               <div class="listar">
                 <div class="card" v-for="(item, index) in datos2" :key="index">
                   <div class="inputs">
-                    <label for="">Boleta:</label>
+                    <label for="">Boleta</label>
                     <p>{{ item.selectedBoleta }}</p>
                   </div>
                   <div class="inputs">
-                    <label for="">Nombre:</label>
+                    <label for="">Nombre</label>
                     <p>{{ item.nombre }}</p>
                   </div>
                   <div class="inputs">
-                    <label for="">direccion:</label>
+                    <label for="">direccion</label>
                     <p>{{ item.direccion }}</p>
                   </div>
                   <div class="inputs">
-                    <label for="">direccion:</label>
+                    <label for="">direccion</label>
                     <p>{{ item.direccion }}</p>
                   </div>
                   <div class="inputs">
-                    <label for="">telefono:</label>
+                    <label for="">telefono</label>
                     <p>{{ item.numeroCel }}</p>
                   </div>
                   <div class="inputs">
-                    <label for="">Estado:</label>
+                    <label for="">Estado</label>
                     <p>{{ item.operaciones }}</p>
                   </div>
                 </div>
@@ -377,22 +418,23 @@
                   class="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
-                  Close
+                  Cerrar
                 </button>
                 <button type="button" class="btn btn-primary">
-                  Save changes
+                  Guardar cambios
                 </button>
               </div>
             </div>
           </div>
         </div>
+
         <!-- Button trigger modal para Personalizar -->
         <button
           type="button"
           class="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#personalizarModal"
-        >
+        :style="{ backgroundColor: colorfooter }">
           📑Personalizar
         </button>
 
@@ -410,34 +452,36 @@
                 <h5 class="modal-title" id="personalizarModalLabel">
                   📑Personalizar
                 </h5>
+                <button
+                  type="button"
+                  class="btn-close btn-close-corner"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
               <div class="modal-body" id="personalizar">
                 <div>
-                  <label>Personaliza el fondo:</label>
+                  <label>Color de fondo</label>
                   <input type="color" v-model="color" />
                 </div>
                 <div>
-                  <label>Personaliza Header: </label>
+                  <label>Barra de navegacion</label>
                   <input type="color" v-model="colorHeader" />
                 </div>
                 <div>
-                  <label>Personaliza el footer: </label>
+                  <label>Botones de Acciones</label>
                   <input type="color" v-model="colorfooter" />
                 </div>
                 <div>
-                  <label>Personaliza Cards: </label>
+                  <label>Color de las cartas</label>
                   <input type="color" v-model="colorcard" />
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <button @click="descargarPDF()">📩Generar pdf</button>
+        <button @click="descargarPDF() " :style="{ backgroundColor: colorfooter }">PDF</button>
       </div>
-    </div>
-    <div class="footer" :style="{ backgroundColor: colorfooter }">
-      <h3>copyraingt 2023-Todos los derechos reservados</h3>
     </div>
   </div>
 </template>
@@ -468,13 +512,28 @@ let color = ref("white");
 let colorHeader = ref("#ff9934");
 let colorfooter = ref("#ff9934");
 let colorcard = ref("#f8f69f");
+let ocultarcomprador = ref(true);
 
+
+const esReservar = () => {
+  return datos2.value.operaciones === 'reservar';
+};
 const editar = () => {
   formularioCrear.value = true;
   mostrarCrearTalonario2.value = true;
   mostrarCrearusuario.value = true;
 };
 const compradorSeleccionado = ref(null);
+function listarBoleta() {
+  if (datos2.value.length === 0) {
+    Swal.fire({
+      title: "Información",
+      text: "No hay boletas disponibles",
+      icon: "info",
+    });
+  }
+}
+
 
 const liberarBoleta = () => {
   const selectedBoletaIndex = datos2.value.findIndex(
@@ -483,6 +542,11 @@ const liberarBoleta = () => {
   if (selectedBoletaIndex >= 0) {
     datos2.value[selectedBoletaIndex].operaciones = "disponible";
     datos2.value.splice(selectedBoletaIndex, 1);
+    Swal.fire({
+      title: "Éxito",
+      text: "Boleta liberada exitosamente",
+      icon: "success",
+    });
   } else {
     console.error("Boleta no encontrada");
   }
@@ -494,6 +558,11 @@ const comprarBoleta = (index) => {
   if (selectedBoletaIndex >= 0) {
     datos2.value[selectedBoletaIndex].operaciones = "pagar";
     mostrarCrearusuario.value = false;
+    Swal.fire({
+      title: "Éxito",
+      text: "Boleta comprada exitosamente",
+      icon: "success",
+    });
   } else {
     console.error("Boleta no encontrada");
   }
@@ -510,7 +579,8 @@ const mostrarDatosComprador = () => {
   if (comprador) {
     Swal.fire({
       title: "Información del Comprador",
-      html: `<p><b>Nombre:</b> ${comprador.nombre}</p>
+      html: `<p><b>#Boleta:</b> ${comprador.selectedBoleta}</p>
+             <p><b>Nombre:</b> ${comprador.nombre}</p>
              <p><b>Dirección:</b> ${comprador.direccion}</p>
              <p><b>Número de teléfono:</b> ${comprador.numeroCel}</p>
              <p><b>Operaciones:</b> ${comprador.operaciones}</p>`,
@@ -520,6 +590,7 @@ const mostrarDatosComprador = () => {
     Swal.fire("Error", "No se encontró información para esta boleta.", "error");
   }
 };
+
 const mostrarModal = () => {
   mostrarinputs.value = false;
   console.log("Inputs mostrados:", mostrarinputs.value);
@@ -590,30 +661,33 @@ const guardar = () => {
   } else if (isNaN(parseInt(cantidad.value)) || parseInt(cantidad.value) <= 0) {
     Swal.fire("La cantidad debe ser un número positivo");
   } else {
-    const dato = {
-      premio: premio.value,
-      valor: valor.value,
-      loteria: loteria.value,
-      cantidad: cantidad.value,
-      fecha: fecha.value,
-    };
-    datos.value.push(dato);
-    numerosSeleccionados.value = [];
+    const fechaActual = new Date();
+    const fechaIngresada = new Date(fecha.value);
 
-    for (let i = 1; i <= cantidad.value; i++) {
-      numerosSeleccionados.value.push(i);
+    if (fechaIngresada <= fechaActual) {
+      Swal.fire("La fecha debe ser mayor a la fecha actual");
+    } else {
+      const dato = {
+        premio: premio.value,
+        valor: valor.value,
+        loteria: loteria.value,
+        cantidad: cantidad.value,
+        fecha: fecha.value,
+      };
+      datos.value.push(dato);
+      numerosSeleccionados.value = [];
+
+      for (let i = 1; i <= cantidad.value; i++) {
+        numerosSeleccionados.value.push(i);
+      }
+
+      mostrarCrearTalonario.value = false;
+      mostrarinputs.value = true;
+      editar2.value = true;
+      mostrarCrearTalonario2.value = true;
+      formularioCrear.value = false;
+      mostrarCrearusuario.value = false;
     }
-
-    console.log(datos);
-    console.log(numerosSeleccionados);
-    mostrarCrearTalonario.value = false;
-    mostrarinputs.value = true;
-    editar2.value = true;
-    mostrarCrearTalonario2.value = true;
-    formularioCrear.value = false;
-    mostrarCrearusuario.value = false;
-
-    console.log(formularioCrear.value);
   }
 };
 
@@ -664,6 +738,28 @@ function descargarPDF() {
 
   doc.save("vendidas.pdf");
 }
+let listarboletaycliente = ref(false ); 
+let comprarboleta = ref( false); 
+
+const actualizarEstadoOcultarComprador = () => {
+  const todasPagadas = datos2.value.every((item) => item.operaciones === 'pagar');
+  const algunaReservada = datos2.value.some((item) => item.operaciones === 'reservar');
+
+  if (todasPagadas) {
+ 
+    listarboletaycliente.value = true;
+    comprarboleta.value = false;
+  } else if (algunaReservada) {
+
+    listarboletaycliente.value = true;
+    comprarboleta.value = true;
+  } else {
+    
+    listarboletaycliente.value = true;
+    comprarboleta.value = true;
+  }
+};
+
 
 const reservarBoleta = (index) => {
   if (
@@ -689,7 +785,7 @@ const reservarBoleta = (index) => {
     operaciones.value = "";
 
     console.log("Boleta reservada:", reserva);
-
+    
     if (
       datos2.value.some(
         (item) =>
@@ -700,16 +796,25 @@ const reservarBoleta = (index) => {
       alert("Esta boleta ya ha sido reservada o pagada");
     }
     datos2.value.push(reserva);
-
+    
     console.log("Datos actualizados:", datos2.value);
     selectButton();
+ 
     // mostrarCrearusuario.value = false;
     ocultarbuton.value = false;
     mostrarbuton.value = true;
     mostrarCrearusuario.value = false;
+
+    
+
+  
+ 
   }
+
 };
+
 </script>
+
 <style scoped>
 .padre {
   display: grid;
@@ -756,8 +861,17 @@ const reservarBoleta = (index) => {
   margin-top: 20%;
   border-radius: 10px;
   background-color: #f8f69f;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  
 }
-
+.info1 h2{
+   display: flex;
+   justify-content: center;
+  align-items: center;
+  
+}
 .chucho {
   display: flex;
   flex-direction: column;
@@ -834,6 +948,8 @@ label {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 8px;
+ 
 }
 
 .modal-footer {
@@ -845,6 +961,9 @@ label {
 .modal-footer .disponible {
   width: 100%;
   height: 7vh;
+}
+.modal-footer button {
+  height: 40px;
 }
 
 .card {
@@ -862,12 +981,16 @@ label {
   border: 2px solid #000;
   border-radius: 10px;
   color: #fff;
-  font-weight: bold;
   padding: 20px;
 }
-
+.info1 p b {
+  font-size: 20px; 
+}
 .card p {
   margin: 8px 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .listar {
@@ -875,7 +998,7 @@ label {
   grid-template-columns: repeat(2, 1fr);
   align-items: center;
   height: auto;
-  padding: 50px;
+  padding: 15px;
 }
 
 .modal-content {
@@ -901,14 +1024,17 @@ label {
   align-items: center;
   font-family: Arial, Helvetica, sans-serif;
 }
+
 #personalizar input[type="color"] {
   margin-left: 8px;
 }
+
 .inputs {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .mostrarinputs {
   display: flex;
   flex-direction: row;
@@ -916,15 +1042,22 @@ label {
   align-items: center;
   gap: 40px;
 }
+
+.inputs label {
+  font-weight: bold;
+}
+
 .mostrarinputs button {
   width: 12vh;
   height: 8vh;
 }
+
 .editar {
   width: 100px;
   padding: 2px;
   border-radius: 5px;
 }
+
 .personalizar {
   background-color: #ffc018;
   text-align: center;
@@ -933,7 +1066,21 @@ label {
   justify-content: center;
   align-items: center;
 }
+.personalizar button {
+  width: 30px;
+  height: 15px;
+  border: none;
+}
+
 .personalizar input {
   border-radius: 20px;
+}
+
+.modal-content .btn-close-corner {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  background-color: transparent;
+  color: black;
 }
 </style>
