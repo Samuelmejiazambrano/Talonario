@@ -207,7 +207,7 @@
                     </button>
                     <button
                       
-                      @click="reservarBoleta(index),actualizarEstadoOcultarComprador()"
+                      @click="reservarBoleta(index)"
                      v-if="mostrarCrearusuario">
                       Guardar
                     </button>
@@ -292,6 +292,7 @@
                   <option value="50">50</option>
                   <option value="75">75</option>
                   <option value="100">100</option>
+                  
                 </select>
                 <label>Ingrese la Fecha</label>
                 <input
@@ -517,6 +518,7 @@ let ocultarcomprador = ref(true);
 
 const esReservar = () => {
   return datos2.value.operaciones === 'reservar';
+  
 };
 const editar = () => {
   formularioCrear.value = true;
@@ -547,6 +549,7 @@ const liberarBoleta = () => {
       text: "Boleta liberada exitosamente",
       icon: "success",
     });
+    EstadoOcultarComprador()
   } else {
     console.error("Boleta no encontrada");
   }
@@ -563,6 +566,7 @@ const comprarBoleta = (index) => {
       text: "Boleta comprada exitosamente",
       icon: "success",
     });
+    EstadoOcultarComprador()
   } else {
     console.error("Boleta no encontrada");
   }
@@ -609,21 +613,34 @@ const cerrarModal = () => {
 };
 const selectButton = (index) => {
   selectedBoleta.value = numerosSeleccionados.value[index];
-  if (
-    datos2.value.some(
-      (item) =>
-        item.selectedBoleta === selectedBoleta.value &&
-        (item.operaciones === "pagar" || item.operaciones === "reservar")
-    )
-  ) {
-    mostrarCrearusuario.value = false;
-    ocultarbuton.value = false;
+
+  if (datos2.value.some(item => item.selectedBoleta === selectedBoleta.value)) {
+    const boleta = datos2.value.find(item => item.selectedBoleta === selectedBoleta.value);
+    
+    if (boleta.operaciones === "pagar") {
+      comprarboleta.value = false;
+      listarboletaycliente.value = true;
+      mostrarCrearusuario.value = false;
+      ocultarbuton.value = false;
+    } else if (boleta.operaciones === "reservar") {
+      comprarboleta.value = true;
+      listarboletaycliente.value = true;
+      mostrarCrearusuario.value = false;
+      ocultarbuton.value = false;
+    } else {
+      mostrarCrearusuario.value = true;
+      ocultarbuton.value = true;
+      comprarboleta.value = true;
+      listarboletaycliente.value = true;
+    }
   } else {
     mostrarCrearusuario.value = true;
-    liberarBoleta(index);
     ocultarbuton.value = true;
+    comprarboleta.value = true;
+    listarboletaycliente.value = true;
   }
 };
+
 
 const getColor = (index) => {
   const boleta = datos2.value.find(
@@ -738,27 +755,33 @@ function descargarPDF() {
 
   doc.save("vendidas.pdf");
 }
-let listarboletaycliente = ref(false ); 
-let comprarboleta = ref( false); 
+let listarboletaycliente = ref(true ); 
+let comprarboleta = ref( true); 
 
-const actualizarEstadoOcultarComprador = () => {
-  const todasPagadas = datos2.value.every((item) => item.operaciones === 'pagar');
-  const algunaReservada = datos2.value.some((item) => item.operaciones === 'reservar');
-
-  if (todasPagadas) {
- 
+// const EstadoOcultarComprador = () => {
+//   if (datos2.value.some(item => item.operaciones === "reservar")) {
+//     listarboletaycliente.value = true;
+//     comprarboleta.value = true;
+   
+//   } else if (datos2.value.some(item => item.operaciones === "pagar")) {
+//     listarboletaycliente.value = true;
+//     comprarboleta.value = false;
+    
+   
+//   } 
+// };
+const EstadoOcultarComprador = () => {
+  if (datos2.value.some(item => item.operaciones === "reservar")) {
+    listarboletaycliente.value = true;
+    comprarboleta.value = true;
+  } else if (datos2.value.some(item => item.operaciones === "pagar")) {
     listarboletaycliente.value = true;
     comprarboleta.value = false;
-  } else if (algunaReservada) {
-
-    listarboletaycliente.value = true;
-    comprarboleta.value = true;
-  } else {
-    
-    listarboletaycliente.value = true;
-    comprarboleta.value = true;
-  }
+  } 
 };
+
+
+
 
 
 const reservarBoleta = (index) => {
@@ -799,13 +822,11 @@ const reservarBoleta = (index) => {
     
     console.log("Datos actualizados:", datos2.value);
     selectButton();
- 
+   
     // mostrarCrearusuario.value = false;
     ocultarbuton.value = false;
     mostrarbuton.value = true;
     mostrarCrearusuario.value = false;
-
-    
 
   
  
