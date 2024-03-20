@@ -11,10 +11,10 @@
         </h2>
         <div>
           <p>
-            <b>🎁{{ premio }}</b>
+            <b>🎁{{ premio.toLocaleString('es-CO')}}</b>
           </p>
           <p>
-            <b>💰{{ valor }}</b>
+            <b>💰{{ valor.toLocaleString('es-CO') }}</b>
           </p>
           <p>
             <b>🏰{{ loteria }}</b>
@@ -274,7 +274,7 @@
               </div>
               <div class="modal-body" v-if="mostrarCrearusuario">
                 <label>Ingresar premio</label>
-                <input type="text" placeholder="premio" v-model="premio" />
+                <input type="number" placeholder="premio" v-model="premio" />
                 <label>Valor de la Boleta</label>
                 <input
                   type="number"
@@ -684,9 +684,10 @@ const guardar = () => {
     if (fechaIngresada <= fechaActual) {
       Swal.fire("La fecha debe ser mayor a la fecha actual");
     } else {
+
       const dato = {
+        valor: valor,
         premio: premio.value,
-        valor: valor.value,
         loteria: loteria.value,
         cantidad: cantidad.value,
         fecha: fecha.value,
@@ -719,7 +720,13 @@ function descargarPDF() {
     (total, boleta) => total + boleta.valor2,
     0
   );
-
+  let usuariosReservados = datos2.value.filter(
+    (usuario) => usuario.operaciones === "reservar"
+  );
+  const totalDineroReservado = usuariosReservados.reduce(
+    (total, boleta) => total + boleta.valor2,
+    0
+  );
   const doc = new jsPDF();
   doc.setFontSize(12);
   doc.text("Resumen de boletas vendidas", 10, 10);
@@ -727,7 +734,7 @@ function descargarPDF() {
   let startY = 20;
   let availableSpace = doc.internal.pageSize.height - startY - 10;
 
-  const tableData = usuariosPagados.map((item, index) => [
+  const tableData = datos2.value.map((item, index) => [
     item.selectedBoleta,
     item.nombre,
     item.numeroCel,
@@ -751,7 +758,8 @@ function descargarPDF() {
     startY: startY,
   });
 
-  doc.text(`Total dinero recolectado: ${totalDineroRecolectado}`, 10, 80);
+  doc.text(`Total dinero recolectado: ${totalDineroRecolectado.toLocaleString('es-CO')}`, 10, 80);
+  doc.text(`Total dinero por pagar: ${totalDineroReservado.toLocaleString('es-CO')}`, 10, 90);
 
   doc.save("vendidas.pdf");
 }
