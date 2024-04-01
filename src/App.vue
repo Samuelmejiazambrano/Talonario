@@ -399,9 +399,10 @@
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalToggle2"
                     @click="editarInformacionUsuario(item, index)"
-                    style="background-color: #999"
+                    style="background-color:#909d9e
+"
                   >
-                    Editar
+                     📝Editar comprador
                   </button>
 
                   <!-- Primer Modal -->
