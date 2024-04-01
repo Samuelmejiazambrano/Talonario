@@ -5,16 +5,13 @@
     </div>
     <div class="info">
       <div class="info1" :style="{ backgroundColor: colorcard }">
-        <h2>
-          Informacion
-         
-        </h2>
+        <h2>Informacion</h2>
         <div>
           <p>
-            <b>🎁{{ premio.toLocaleString('es-CO')}}</b>
+            <b>🎁{{ premio.toLocaleString("es-CO") }}</b>
           </p>
           <p>
-            <b>💰{{ valor.toLocaleString('es-CO') }}</b>
+            <b>💰{{ valor.toLocaleString("es-CO") }}</b>
           </p>
           <p>
             <b>🏰{{ loteria }}</b>
@@ -48,6 +45,7 @@
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
+              
             >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -69,9 +67,9 @@
                       data-bs-toggle="modal"
                       data-bs-dismiss="modal"
                       v-if="ocultarbuton"
-                      
+                      @click="limpiarCamposCompraBoleta()"
                     >
-                     <b>Adquirir boleta</b> 
+                      <b>Adquirir boleta</b>
                     </button>
                     <!-- <button
                       class="disponible"
@@ -82,7 +80,7 @@
                       <b>Observar </b>
                     </button> -->
                     <div v-else-if="mostrarinputs" class="mostrarinputs">
-                      <button @click="comprarBoleta()" v-if="comprarboleta" >
+                      <button @click="comprarBoleta()" v-if="comprarboleta">
                         <b>Comprar boleta</b>
                       </button>
 
@@ -93,14 +91,18 @@
                         data-bs-target="#staticBackdrop"
                         @click="
                           mostrarcomprador();
-                          mostrarDatosComprador()  "
-                     v-if="listarboletaycliente"
-                     
+                          mostrarDatosComprador();
+                        "
+                        v-if="listarboletaycliente"
                       >
                         <b>Cliente</b>
                       </button>
 
-                      <button class="butoninputs" @click="liberarBoleta()" v-if="listarboletaycliente"  >
+                      <button
+                        class="butoninputs"
+                        @click="liberarBoleta()"
+                        v-if="listarboletaycliente"
+                      >
                         <b>Liberar</b>
                       </button>
                     </div>
@@ -115,8 +117,6 @@
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel2"
               tabindex="-1"
-              
-             
             >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content" id="comprar">
@@ -127,7 +127,7 @@
                     <h5
                       class="modal-title"
                       id="exampleModalToggleLabel2"
-                      v-if="mostrarCrearusuario"
+                      v-if="mostrar"
                     >
                       Comprar boleta #{{ selectedBoleta }}
                     </h5>
@@ -136,19 +136,26 @@
                       class="modal-title"
                       id="exampleModalToggleLabel2"
                       v-else-if="mostrarinputs"
-                   
                     >
-                      <b>Boleta  comprada </b>
+                      <b>Boleta comprada </b>
+                    </h5>
+                    <h5
+                      class="modal-title"
+                      id="exampleModalToggleLabel2"
+                      v-else-if="editar3"
+                    >
+                      <b>Editar Comprador #{{ selectedBoleta }} </b>
                     </h5>
                     <button
                       type="button"
                       class="btn-close btn-close-corner"
                       data-bs-dismiss="modal"
                       aria-label="Close"
-                     v-if="mostrarCrearusuario"></button>
+                      v-if="mostrarCrearusuario"
+                    ></button>
                   </div>
                   <div class="modal-body" v-if="mostrarCrearusuario">
-                    <form >
+                    <form>
                       <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input
@@ -203,13 +210,17 @@
                       class="btn btn-secondary"
                       data-bs-dismiss="modal"
                     >
-                  cerrar
+                      cerrar
                     </button>
-                    <button
-                      
-                      @click="reservarBoleta(index)"
-                     v-if="mostrarCrearusuario">
+                    <button @click="reservarBoleta(index)" v-if="ocultar">
                       Guardar
+                    </button>
+
+                    <button
+                      v-if="mostrarBotonGuardarEditar"
+                      @click="actualizarReserva(index)"
+                    >
+                      Editar
                     </button>
                   </div>
                 </div>
@@ -292,7 +303,6 @@
                   <option value="50">50</option>
                   <option value="75">75</option>
                   <option value="100">100</option>
-                  
                 </select>
                 <label>Ingrese la Fecha</label>
                 <input
@@ -342,7 +352,6 @@
           tabindex="-1"
           aria-labelledby="listarBoletasLabel"
           aria-hidden="true"
-         
         >
           <div class="modal-dialog">
             <div class="modal-content">
@@ -372,10 +381,7 @@
                     <label for="">direccion</label>
                     <p>{{ item.direccion }}</p>
                   </div>
-                  <div class="inputs">
-                    <label for="">direccion</label>
-                    <p>{{ item.direccion }}</p>
-                  </div>
+
                   <div class="inputs">
                     <label for="">telefono</label>
                     <p>{{ item.numeroCel }}</p>
@@ -383,6 +389,41 @@
                   <div class="inputs">
                     <label for="">Estado</label>
                     <p>{{ item.operaciones }}</p>
+                  </div>
+
+                  <!-- Modal: Launch demo modal -->
+                  <!-- Botón que activa el primer modal -->
+                  <button
+                    type="button"
+                    class="editar2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalToggle2"
+                    @click="editarInformacionUsuario(item, index)"
+                    style="background-color: #999"
+                  >
+                    Editar
+                  </button>
+
+                  <!-- Primer Modal -->
+                  <div
+                    class="modal fade"
+                    id="exampleModalToggle2"
+                    tabindex="-1"
+                    aria-labelledby="exampleModalToggleLabel2"
+                    aria-hidden="true"
+                  >
+                    <!-- Contenido del primer modal -->
+                  </div>
+
+                  <!-- Segundo Modal -->
+                  <div
+                    class="modal fade"
+                    id="exampleModalToggle3"
+                    tabindex="-1"
+                    aria-labelledby="exampleModalToggleLabel3"
+                    aria-hidden="true"
+                  >
+                    <!-- Contenido del segundo modal -->
                   </div>
                 </div>
               </div>
@@ -435,7 +476,8 @@
           class="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#personalizarModal"
-        :style="{ backgroundColor: colorfooter }">
+          :style="{ backgroundColor: colorfooter }"
+        >
           📑Personalizar
         </button>
 
@@ -481,7 +523,12 @@
             </div>
           </div>
         </div>
-        <button @click="descargarPDF() " :style="{ backgroundColor: colorfooter }">PDF</button>
+        <button
+          @click="descargarPDF()"
+          :style="{ backgroundColor: colorfooter }"
+        >
+          PDF
+        </button>
       </div>
     </div>
   </div>
@@ -514,12 +561,24 @@ let colorHeader = ref("#ff9934");
 let colorfooter = ref("#ff9934");
 let colorcard = ref("#f8f69f");
 let ocultarcomprador = ref(true);
-
-
+let mostrarregistro = ref(true);
+let mostrareditar = ref(false);
+const mostrarBotonGuardarEditar = ref(false);
+let ocultar = ref(false);
+let editar3 = ref(false);
+let mostrar = ref(false);
 const esReservar = () => {
-  return datos2.value.operaciones === 'reservar';
-  
+  return datos2.value.operaciones === "reservar";
 };
+
+const limpiarCamposCompraBoleta = () => {
+  // Limpiar los campos del formulario de comprar boleta
+  nombre.value = "";
+  direccion.value = "";
+  numeroCel.value = "";
+  operaciones.value = "";
+};
+
 const editar = () => {
   formularioCrear.value = true;
   mostrarCrearTalonario2.value = true;
@@ -536,7 +595,6 @@ function listarBoleta() {
   }
 }
 
-
 const liberarBoleta = () => {
   const selectedBoletaIndex = datos2.value.findIndex(
     (boleta) => boleta.selectedBoleta === selectedBoleta.value
@@ -549,7 +607,7 @@ const liberarBoleta = () => {
       text: "Boleta liberada exitosamente",
       icon: "success",
     });
-    EstadoOcultarComprador()
+    EstadoOcultarComprador();
   } else {
     console.error("Boleta no encontrada");
   }
@@ -566,7 +624,7 @@ const comprarBoleta = (index) => {
       text: "Boleta comprada exitosamente",
       icon: "success",
     });
-    EstadoOcultarComprador()
+    EstadoOcultarComprador();
   } else {
     console.error("Boleta no encontrada");
   }
@@ -613,20 +671,29 @@ const cerrarModal = () => {
 };
 const selectButton = (index) => {
   selectedBoleta.value = numerosSeleccionados.value[index];
+   editarInformacionUsuario()
+  if (
+    datos2.value.some((item) => item.selectedBoleta === selectedBoleta.value)
+  ) {
+    const boleta = datos2.value.find(
+      (item) => item.selectedBoleta === selectedBoleta.value
+    );
 
-  if (datos2.value.some(item => item.selectedBoleta === selectedBoleta.value)) {
-    const boleta = datos2.value.find(item => item.selectedBoleta === selectedBoleta.value);
-    
     if (boleta.operaciones === "pagar") {
       comprarboleta.value = false;
       listarboletaycliente.value = true;
-      mostrarCrearusuario.value = false;
+      mostrarCrearusuario.value = true;
+      mostrarinputs.value=true;
+      
       ocultarbuton.value = false;
     } else if (boleta.operaciones === "reservar") {
       comprarboleta.value = true;
       listarboletaycliente.value = true;
       mostrarCrearusuario.value = false;
       ocultarbuton.value = false;
+        mostrarCrearusuario.value = true;
+         mostrarinputs.value=true;
+          
     } else {
       mostrarCrearusuario.value = true;
       ocultarbuton.value = true;
@@ -638,9 +705,14 @@ const selectButton = (index) => {
     ocultarbuton.value = true;
     comprarboleta.value = true;
     listarboletaycliente.value = true;
+    ocultar.value = true;
+    mostrarBotonGuardarEditar.value = false;
+     editar3.value = false;
+     mostrar.value=true
+
+ 
   }
 };
-
 
 const getColor = (index) => {
   const boleta = datos2.value.find(
@@ -679,12 +751,11 @@ const guardar = () => {
     Swal.fire("La cantidad debe ser un número positivo");
   } else {
     const fechaActual = new Date();
-    const fechaIngresada = new Date(fecha.value);
+    const fechaISO = fechaActual.toISOString().split("T")[0];
 
-    if (fechaIngresada <= fechaActual) {
+    if (fecha.value < fechaISO) {
       Swal.fire("La fecha debe ser mayor a la fecha actual");
     } else {
-
       const dato = {
         valor: valor,
         premio: premio.value,
@@ -758,40 +829,83 @@ function descargarPDF() {
     startY: startY,
   });
 
-  doc.text(`Total dinero recolectado: ${totalDineroRecolectado.toLocaleString('es-CO')}`, 10, 80);
-  doc.text(`Total dinero por pagar: ${totalDineroReservado.toLocaleString('es-CO')}`, 10, 90);
+  doc.text(
+    `Total dinero recolectado: ${totalDineroRecolectado.toLocaleString(
+      "es-CO"
+    )}`,
+    10,
+    80
+  );
+  doc.text(
+    `Total dinero por pagar: ${totalDineroReservado.toLocaleString("es-CO")}`,
+    10,
+    90
+  );
 
   doc.save("vendidas.pdf");
 }
-let listarboletaycliente = ref(true ); 
-let comprarboleta = ref( true); 
+let listarboletaycliente = ref(true);
+let comprarboleta = ref(true);
 
 // const EstadoOcultarComprador = () => {
 //   if (datos2.value.some(item => item.operaciones === "reservar")) {
 //     listarboletaycliente.value = true;
 //     comprarboleta.value = true;
-   
+
 //   } else if (datos2.value.some(item => item.operaciones === "pagar")) {
 //     listarboletaycliente.value = true;
 //     comprarboleta.value = false;
-    
-   
-//   } 
+
+//   }
 // };
 const EstadoOcultarComprador = () => {
-  if (datos2.value.some(item => item.operaciones === "reservar")) {
+  if (datos2.value.some((item) => item.operaciones === "reservar")) {
     listarboletaycliente.value = true;
     comprarboleta.value = true;
-  } else if (datos2.value.some(item => item.operaciones === "pagar")) {
+  } else if (datos2.value.some((item) => item.operaciones === "pagar")) {
     listarboletaycliente.value = true;
     comprarboleta.value = false;
-  } 
+  }
+};
+const selectedIndex = ref(-1);
+const actualizarReserva = (index) => {
+  
+  // Verifica si el índice seleccionado es válido
+  if (selectedIndex.value >= 0 && selectedIndex.value < datos2.value.length) {
+    // Actualiza las propiedades del elemento seleccionado
+    const selectedItem = datos2.value[selectedIndex.value];
+    selectedItem.nombre = nombre.value;
+    selectedItem.direccion = direccion.value;
+    selectedItem.numeroCel = numeroCel.value;
+    selectedItem.operaciones = operaciones.value;
+
+    // Cierra el modal de edición
+
+    // Restablece los valores de entrada
+    // nombre.value = "";
+    // direccion.value = "";
+    // numeroCel.value = "";
+    // operaciones.value = "";
+
+    // Actualiza el estado de los botones
+  
+    Swal.fire({
+      title: "Éxito",
+      text: "Boleta editada exitosamente",
+      icon: "success",
+    });
+  } else {
+    console.error("El índice proporcionado no es válido:", selectedIndex.value);
+  }
+  ocultarbuton.value = false;
+  ocultar.value = false;
+  editar3.value = true;
+  mostrar.value=false
+  mostrarinputs.value=false
+  mostrarBotonGuardarEditar.value = true;
 };
 
-
-
-
-
+const modalRef = ref(null);
 const reservarBoleta = (index) => {
   if (
     !nombre.value ||
@@ -810,13 +924,8 @@ const reservarBoleta = (index) => {
       selectedBoleta: selectedBoleta.value,
     };
 
-    nombre.value = "";
-    direccion.value = "";
-    numeroCel.value = "";
-    operaciones.value = "";
-
     console.log("Boleta reservada:", reserva);
-    
+
     if (
       datos2.value.some(
         (item) =>
@@ -827,19 +936,60 @@ const reservarBoleta = (index) => {
       alert("Esta boleta ya ha sido reservada o pagada");
     }
     datos2.value.push(reserva);
-    
+
     console.log("Datos actualizados:", datos2.value);
     selectButton();
-   
+
     // mostrarCrearusuario.value = false;
     ocultarbuton.value = false;
     mostrarbuton.value = true;
     mostrarCrearusuario.value = false;
+    ocultar.value = false;
+    mostrarinputs.value=true
+    mostrar.value=false
 
-  
- 
+    nombre.value = "";
+    direccion.value = "";
+    numeroCel.value = "";
+    operaciones.value = "";
+    mostrarregistro.value = false;
+  }
+};
+
+actualizarReserva();
+const editarInformacionUsuario = (item, index) => {
+  mostrarCrearusuario.value = true;
+
+  if (!item) {
+    console.error(
+      "El comprador es undefined. Verifica el índice proporcionado:",
+      index
+    );
+    return;
   }
 
+  // Actualiza el índice del elemento seleccionado
+  selectedIndex.value = index;
+  selectButton(index);
+  // Asigna el número de boleta al selectedBoleta
+  selectedBoleta.value = item.selectedBoleta;
+  // Actualiza los campos de entrada con los valores del comprador
+  nombre.value = item.nombre;
+  direccion.value = item.direccion || "";
+  numeroCel.value = item.numeroCel || "";
+  operaciones.value = item.operaciones || "";
+
+  console.log("Datos actualizados:", datos2.value);
+
+  // Muestra el botón para reservar o pagar
+  // mostrarbuton.value = true;
+  ocultar.value = false;
+  mostrarBotonGuardarEditar.value = true;
+  mostrarCrearusuario.value = true;
+  // mostrarinputs.value = false;
+  editar3.value = true;
+  mostrar.value=false
+  mostrarinputs.value=false
 };
 
 </script>
@@ -876,7 +1026,11 @@ const reservarBoleta = (index) => {
   gap: 10px;
   padding: 30px;
 }
-
+.editar2 {
+  background-color: #ccc;
+  padding: 5px;
+  border: 5px solid black;
+}
 .info1 {
   display: flex;
   flex-direction: column;
@@ -893,13 +1047,11 @@ const reservarBoleta = (index) => {
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
-  
 }
-.info1 h2{
-   display: flex;
-   justify-content: center;
+.info1 h2 {
+  display: flex;
+  justify-content: center;
   align-items: center;
-  
 }
 .chucho {
   display: flex;
@@ -978,7 +1130,6 @@ label {
   justify-content: center;
   align-items: center;
   padding: 8px;
- 
 }
 
 .modal-footer {
@@ -1013,7 +1164,7 @@ label {
   padding: 20px;
 }
 .info1 p b {
-  font-size: 20px; 
+  font-size: 20px;
 }
 .card p {
   margin: 8px 0;
