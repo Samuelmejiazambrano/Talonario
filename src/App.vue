@@ -45,7 +45,6 @@
               aria-hidden="true"
               aria-labelledby="exampleModalToggleLabel"
               tabindex="-1"
-              
             >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -86,18 +85,14 @@
 
                       <button
                         type="button"
-                        class="butoninputs"
+                        class="btn btn-primary"
                         data-bs-toggle="modal"
-                        data-bs-target="#staticBackdrop"
-                        @click="
-                          mostrarcomprador();
-                          mostrarDatosComprador();
-                        "
-                        v-if="listarboletaycliente"
+                        data-bs-target="#personalizarModal"
+                      
+                        @click="mostrarDatosComprador()"
                       >
-                        <b>Cliente</b>
+                      <b> cliente</b> 
                       </button>
-
                       <button
                         class="butoninputs"
                         @click="liberarBoleta()"
@@ -393,17 +388,16 @@
 
                   <!-- Modal: Launch demo modal -->
                   <!-- Botón que activa el primer modal -->
-                  <button
+                  <!-- <button
                     type="button"
                     class="editar2"
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModalToggle2"
                     @click="editarInformacionUsuario(item, index)"
-                    style="background-color:#909d9e
-"
+                    style="background-color: #909d9e"
                   >
-                     📝Editar comprador
-                  </button>
+                    📝Editar comprador
+                  </button> -->
 
                   <!-- Primer Modal -->
                   <div
@@ -478,6 +472,7 @@
           data-bs-toggle="modal"
           data-bs-target="#personalizarModal"
           :style="{ backgroundColor: colorfooter }"
+          @click="personalizar()"
         >
           📑Personalizar
         </button>
@@ -493,8 +488,11 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="personalizar">
-                <h5 class="modal-title" id="personalizarModalLabel">
+                <h5 class="modal-title" id="personalizarModalLabel" v-if="mostrar">
                   📑Personalizar
+                </h5>
+                     <h5 class="modal-title" id="personalizarModalLabel" v-if="aparecer">
+                Informacion de Usuario
                 </h5>
                 <button
                   type="button"
@@ -504,21 +502,49 @@
                 ></button>
               </div>
               <div class="modal-body" id="personalizar">
-                <div>
-                  <label>Color de fondo</label>
-                  <input type="color" v-model="color" />
+                <div v-if="mostrar"  class="personalizar2">
+                  <div>
+                    <label>Color de fondo</label>
+                    <input type="color" v-model="color" />
+                  </div>
+                  <div>
+                    <label>Barra de navegacion</label>
+                    <input type="color" v-model="colorHeader" />
+                  </div>
+                  <div>
+                    <label>Botones de Acciones</label>
+                    <input type="color" v-model="colorfooter" />
+                  </div>
+                  <div>
+                    <label>Color de las cartas</label>
+                    <input type="color" v-model="colorcard" />
+                  </div>
                 </div>
-                <div>
-                  <label>Barra de navegacion</label>
-                  <input type="color" v-model="colorHeader" />
-                </div>
-                <div>
-                  <label>Botones de Acciones</label>
-                  <input type="color" v-model="colorfooter" />
-                </div>
-                <div>
-                  <label>Color de las cartas</label>
-                  <input type="color" v-model="colorcard" />
+
+                <div v-if="aparecer">
+                  <div v-if="comprador" class="comprador-info">
+                    <p><b>#Boleta:</b> {{ comprador.selectedBoleta }}</p>
+                    <p><b>Nombre:</b> {{ comprador.nombre }}</p>
+                    <p><b>Dirección:</b> {{ comprador.direccion }}</p>
+                    <p><b>Número de teléfono:</b> {{ comprador.numeroCel }}</p>
+                    <p><b>Operaciones:</b> {{ comprador.operaciones }}</p>
+                    
+                      <button
+                    type="button"
+                    class="editar2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalToggle2"
+                    @click="editarInformacionUsuario(comprador)"
+                    style="background-color: #909d9e"
+                  >
+                    📝Editar comprador
+                  </button>
+                  </div>
+                  <div v-else>
+                    <p>No se encontró información para esta boleta.</p>
+                  </div>
+
+            
                 </div>
               </div>
             </div>
@@ -568,6 +594,13 @@ const mostrarBotonGuardarEditar = ref(false);
 let ocultar = ref(false);
 let editar3 = ref(false);
 let mostrar = ref(false);
+let aparecer = ref(false);
+
+const personalizar = () => {
+  mostrar.value = true;
+  aparecer.value = false;
+};
+
 const esReservar = () => {
   return datos2.value.operaciones === "reservar";
 };
@@ -631,26 +664,25 @@ const comprarBoleta = (index) => {
   }
 };
 
+const comprador = ref(null);
+
 const mostrarDatosComprador = () => {
+  mostrar.value = false;
+  aparecer.value = true;
   if (!selectedBoleta.value) {
     return;
   }
 
-  const comprador = datos2.value.find(
+  const compradorEncontrado = datos2.value.find(
     (item) => item.selectedBoleta === selectedBoleta.value
   );
-  if (comprador) {
-    Swal.fire({
-      title: "Información del Comprador",
-      html: `<p><b>#Boleta:</b> ${comprador.selectedBoleta}</p>
-             <p><b>Nombre:</b> ${comprador.nombre}</p>
-             <p><b>Dirección:</b> ${comprador.direccion}</p>
-             <p><b>Número de teléfono:</b> ${comprador.numeroCel}</p>
-             <p><b>Operaciones:</b> ${comprador.operaciones}</p>`,
-      icon: "info",
-    });
+
+  if (compradorEncontrado) {
+    comprador.value = compradorEncontrado;
+    aparecer.value = true;
   } else {
-    Swal.fire("Error", "No se encontró información para esta boleta.", "error");
+    aparecer.value = false;
+    console.error("No se encontró información para esta boleta.");
   }
 };
 
@@ -672,7 +704,7 @@ const cerrarModal = () => {
 };
 const selectButton = (index) => {
   selectedBoleta.value = numerosSeleccionados.value[index];
-   editarInformacionUsuario()
+  editarInformacionUsuario();
   if (
     datos2.value.some((item) => item.selectedBoleta === selectedBoleta.value)
   ) {
@@ -684,17 +716,16 @@ const selectButton = (index) => {
       comprarboleta.value = false;
       listarboletaycliente.value = true;
       mostrarCrearusuario.value = true;
-      mostrarinputs.value=true;
-      
+      mostrarinputs.value = true;
+
       ocultarbuton.value = false;
     } else if (boleta.operaciones === "reservar") {
       comprarboleta.value = true;
       listarboletaycliente.value = true;
       mostrarCrearusuario.value = false;
       ocultarbuton.value = false;
-        mostrarCrearusuario.value = true;
-         mostrarinputs.value=true;
-          
+      mostrarCrearusuario.value = true;
+      mostrarinputs.value = true;
     } else {
       mostrarCrearusuario.value = true;
       ocultarbuton.value = true;
@@ -708,10 +739,8 @@ const selectButton = (index) => {
     listarboletaycliente.value = true;
     ocultar.value = true;
     mostrarBotonGuardarEditar.value = false;
-     editar3.value = false;
-     mostrar.value=true
-
- 
+    editar3.value = false;
+    mostrar.value = true;
   }
 };
 
@@ -870,7 +899,6 @@ const EstadoOcultarComprador = () => {
 };
 const selectedIndex = ref(-1);
 const actualizarReserva = (index) => {
-  
   // Verifica si el índice seleccionado es válido
   if (selectedIndex.value >= 0 && selectedIndex.value < datos2.value.length) {
     // Actualiza las propiedades del elemento seleccionado
@@ -880,16 +908,6 @@ const actualizarReserva = (index) => {
     selectedItem.numeroCel = numeroCel.value;
     selectedItem.operaciones = operaciones.value;
 
-    // Cierra el modal de edición
-
-    // Restablece los valores de entrada
-    // nombre.value = "";
-    // direccion.value = "";
-    // numeroCel.value = "";
-    // operaciones.value = "";
-
-    // Actualiza el estado de los botones
-  
     Swal.fire({
       title: "Éxito",
       text: "Boleta editada exitosamente",
@@ -901,8 +919,8 @@ const actualizarReserva = (index) => {
   ocultarbuton.value = false;
   ocultar.value = false;
   editar3.value = true;
-  mostrar.value=false
-  mostrarinputs.value=false
+  mostrar.value = false;
+  mostrarinputs.value = false;
   mostrarBotonGuardarEditar.value = true;
 };
 
@@ -946,8 +964,8 @@ const reservarBoleta = (index) => {
     mostrarbuton.value = true;
     mostrarCrearusuario.value = false;
     ocultar.value = false;
-    mostrarinputs.value=true
-    mostrar.value=false
+    mostrarinputs.value = true;
+    mostrar.value = false;
 
     nombre.value = "";
     direccion.value = "";
@@ -958,44 +976,61 @@ const reservarBoleta = (index) => {
 };
 
 actualizarReserva();
-const editarInformacionUsuario = (item, index) => {
-  mostrarCrearusuario.value = true;
-
-  if (!item) {
+const editarInformacionUsuario = (comprador) => {
+  if (!comprador) {
     console.error(
-      "El comprador es undefined. Verifica el índice proporcionado:",
-      index
+      "El comprador es undefined. Verifica el objeto proporcionado."
     );
     return;
   }
 
-  // Actualiza el índice del elemento seleccionado
-  selectedIndex.value = index;
-  selectButton(index);
-  // Asigna el número de boleta al selectedBoleta
-  selectedBoleta.value = item.selectedBoleta;
-  // Actualiza los campos de entrada con los valores del comprador
-  nombre.value = item.nombre;
-  direccion.value = item.direccion || "";
-  numeroCel.value = item.numeroCel || "";
-  operaciones.value = item.operaciones || "";
+  // Buscar el índice del comprador en datos2
+  const index = datos2.value.findIndex((item) => item === comprador);
 
-  console.log("Datos actualizados:", datos2.value);
+  if (index !== -1) {
+    // Asignar el índice del comprador seleccionado
+    selectedIndex.value = index;
 
-  // Muestra el botón para reservar o pagar
-  // mostrarbuton.value = true;
-  ocultar.value = false;
-  mostrarBotonGuardarEditar.value = true;
-  mostrarCrearusuario.value = true;
-  // mostrarinputs.value = false;
-  editar3.value = true;
-  mostrar.value=false
-  mostrarinputs.value=false
+    // Actualizar los campos con los valores del comprador
+    nombre.value = comprador.nombre;
+    direccion.value = comprador.direccion || "";
+    numeroCel.value = comprador.numeroCel || "";
+    operaciones.value = comprador.operaciones || "";
+
+    // Muestra el botón para reservar o pagar
+    ocultarbuton.value = false;
+    ocultar.value = false;
+    editar3.value = true;
+    mostrar.value = false;
+    mostrarinputs.value = false;
+    mostrarBotonGuardarEditar.value = true;
+  } else {
+    console.error("El comprador seleccionado no se encontró en datos2.");
+  }
 };
-
 </script>
 
 <style scoped>
+.comprador-info {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.comprador-info p {
+  margin-bottom: 10px;
+}
+
+.comprador-info .editar {
+  width: 40%;
+  padding: 10px;
+}
+
 .padre {
   display: grid;
   grid-template-rows: 10vh 100vh 10vh;
@@ -1031,6 +1066,7 @@ const editarInformacionUsuario = (item, index) => {
   background-color: #ccc;
   padding: 5px;
   border: 5px solid black;
+  
 }
 .info1 {
   display: flex;
@@ -1187,7 +1223,7 @@ label {
   bottom: 0;
 }
 
-#personalizar > * {
+/* #personalizar > * {
   width: 35vh;
   height: 7vh;
   display: flex;
@@ -1196,18 +1232,31 @@ label {
   background-color: #ccc;
   border-radius: 10px;
   border: 2px solid;
-}
+} */
 
-#personalizar {
+.personalizar2 {
+font-size: 20px;
+font-family: Arial, Helvetica, sans-serif;
+padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: Arial, Helvetica, sans-serif;
-}
+  gap: 20px;
 
-#personalizar input[type="color"] {
-  margin-left: 8px;
+}
+.personalizar2 >*{
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+     background-color: gray;
+     width: 100%;
+     border: 2px solid;
+     border-radius: 20px;
+}
+#personalizar button{
+    width: 40%;
 }
 
 .inputs {
