@@ -297,7 +297,7 @@
                 <select name="" id="" v-model="cantidad">
                   <option value="50">50</option>
                   <option value="75">75</option>
-                  <option value="100">100</option>
+                  <option value="99">99</option>
                 </select>
                 <label>Ingrese la Fecha</label>
                 <input
@@ -796,7 +796,7 @@ const guardar = () => {
       datos.value.push(dato);
       numerosSeleccionados.value = [];
 
-      for (let i = 1; i <= cantidad.value; i++) {
+      for (let i = 0; i <= cantidad.value; i++) {
         numerosSeleccionados.value.push(i);
       }
 
